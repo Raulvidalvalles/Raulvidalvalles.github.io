@@ -1,74 +1,104 @@
-// El evento 'DOMContentLoaded' se asegura de que el script no se ejecute
-// hasta que todo el contenido HTML de la página esté cargado.
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Obtener el elemento donde se mostrará el texto
-    const typingText = document.getElementById('typing-text');
-    
-    // Frases que se mostrarán en la animación
-    const phrases = [
-        "Estudiante de Desarrollo de Aplicaciones.",
-        "Tecnólogo y entusiasta.",
-        "Autodidacta y curioso."
-    ];
-    
-    // Variables para controlar el estado de la animación
-    let phraseIndex = 0; // Índice de la frase actual
-    let charIndex = 0;   // Índice del carácter actual
-    let isDeleting = false; // Estado para saber si estamos borrando o escribiendo
-
-    function type() {
-        const currentPhrase = phrases[phraseIndex];
-        
-        if (isDeleting) {
-            // Borrando el texto carácter por carácter
-            typingText.textContent = currentPhrase.substring(0, charIndex--);
-        } else {
-            // Escribiendo el texto carácter por carácter
-            typingText.textContent = currentPhrase.substring(0, charIndex++);
-        }
-
-        // Condición para cambiar de estado (de escribir a borrar)
-        if (!isDeleting && charIndex === currentPhrase.length + 1) {
-            isDeleting = true;
-            // Pausar un tiempo después de terminar de escribir la frase
-            setTimeout(type, 1500); 
-        } 
-        // Condición para cambiar de estado (de borrar a escribir la siguiente frase)
-        else if (isDeleting && charIndex === -1) {
-            isDeleting = false;
-            // Pasar a la siguiente frase (y volver a la primera si es la última)
-            phraseIndex = (phraseIndex + 1) % phrases.length;
-            // Pausar un poco antes de empezar a escribir la nueva frase
-            setTimeout(type, 500);
-        } else {
-            // Controlar la velocidad de escritura y borrado
-            const typingSpeed = isDeleting ? 50 : 100;
-            setTimeout(type, typingSpeed);
-        }
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
     }
+});
 
-    // Iniciar la animación
-    type();
-
-    // --- Smooth scroll con offset para el header fijo ---
-    const header = document.querySelector('header');
-    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href').slice(1);
-            const targetSection = document.getElementById(targetId);
-            if (targetSection) {
-                e.preventDefault();
-                const headerHeight = header.offsetHeight;
-                const sectionTop = targetSection.getBoundingClientRect().top + window.pageYOffset;
-                // Ajusta el offset para que la sección quede más arriba
-                const extraOffset = -24; // Valor negativo para que suba más la sección
-                window.scrollTo({
-                    top: sectionTop - headerHeight + extraOffset,
-                    behavior: 'smooth'
-                });
-            }
-        });
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     });
 });
+
+// Scroll reveal animation
+const reveals = document.querySelectorAll('.reveal');
+
+const revealOnScroll = () => {
+    const windowHeight = window.innerHeight;
+    reveals.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const revealPoint = 150;
+
+        if (elementTop < windowHeight - revealPoint) {
+            element.classList.add('active');
+        }
+    });
+};
+
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll(); // Initial check
+
+// Interactive skill cards
+const skillCards = document.querySelectorAll('.skill-card');
+skillCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.boxShadow = '0 20px 60px rgba(59, 130, 246, 0.4)';
+    });
+    card.addEventListener('mouseleave', function() {
+        this.style.boxShadow = 'none';
+    });
+});
+
+// Project cards interaction
+const projectCards = document.querySelectorAll('.project-card');
+projectCards.forEach(card => {
+    card.addEventListener('click', function() {
+        this.style.animation = 'pulse 0.5s';
+        setTimeout(() => {
+            this.style.animation = '';
+        }, 500);
+    });
+});
+
+// Add typing effect to hero
+const heroText = document.querySelector('.hero h2');
+if (heroText) {
+    const text = heroText.textContent;
+    heroText.textContent = '';
+    let i = 0;
+
+    setTimeout(() => {
+        const typeWriter = () => {
+            if (i < text.length) {
+                heroText.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        };
+        typeWriter();
+    }, 500);
+}
+
+// Contact cards hover effect
+const contactCards = document.querySelectorAll('.contact-card');
+contactCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.background = 'linear-gradient(135deg, #3b82f6, #06b6d4)';
+    });
+    card.addEventListener('mouseleave', function() {
+        this.style.background = 'linear-gradient(135deg, var(--lighter), var(--light))';
+    });
+});
+
+// Profile image animation
+const profileImage = document.querySelector('.profile-image');
+if (profileImage) {
+    profileImage.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.1) rotate(5deg)';
+    });
+    profileImage.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1) rotate(0deg)';
+    });
+}
